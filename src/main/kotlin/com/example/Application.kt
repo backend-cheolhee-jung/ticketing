@@ -8,5 +8,7 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    configureRouting()
+    configureChrome()
+    configureStopApplication()
+    configureDependencyInjection()
 }
