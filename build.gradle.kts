@@ -18,6 +18,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
@@ -32,7 +33,7 @@ dependencies {
     implementation("org.seleniumhq.selenium:selenium-java:4.26.0")
     implementation("io.github.bonigarcia:webdrivermanager:5.9.2")
     implementation("com.cronutils:cron-utils:9.2.1")
-    implementation("com.github.lolmageap.ktor-server-extension:scheduler:1.0.1")
+    implementation("com.github.lolmageap.ktor-server-extension:scheduler:1.0.2")
     implementation("io.ktor:ktor-server-status-pages")
 
     implementation("ch.qos.logback:logback-classic:$logback_version")

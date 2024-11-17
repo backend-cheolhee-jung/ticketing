@@ -8,6 +8,7 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    yes24Scheduler()
     configureChrome()
     configureStopApplication()
     configureDependencyInjection()
