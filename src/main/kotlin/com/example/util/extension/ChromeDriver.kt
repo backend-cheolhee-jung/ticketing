@@ -1,6 +1,6 @@
 package com.example.util.extension
 
-import com.example.util.ChromeManager
+import com.example.plugins.ChromeManager
 import com.example.util.constant.JavaScriptEvent.CLICK
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers.IO
@@ -13,6 +13,7 @@ import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 private val logger = KotlinLogging.logger { }
@@ -49,7 +50,7 @@ suspend fun RemoteWebDriver.hasElement(
 
 suspend fun RemoteWebDriver.waitUntilElementRendered(
     element: By,
-    waitTime: Duration,
+    waitTime: Duration = 5.seconds,
 ) {
     withContext(IO) {
         val wait = WebDriverWait(this@waitUntilElementRendered, waitTime.toJavaDuration())
@@ -59,7 +60,7 @@ suspend fun RemoteWebDriver.waitUntilElementRendered(
 
 suspend fun RemoteWebDriver.isElementRendered(
     element: By,
-    waitTime: Duration,
+    waitTime: Duration = 5.seconds,
 ) =
     withContext(IO) {
         try {
@@ -73,7 +74,7 @@ suspend fun RemoteWebDriver.isElementRendered(
 
 suspend fun RemoteWebDriver.waitUntilElementRemoved(
     element: By,
-    waitTime: Duration,
+    waitTime: Duration = 5.seconds,
 ) {
     withContext(IO) {
         val wait = WebDriverWait(this@waitUntilElementRemoved, waitTime.toJavaDuration())
