@@ -1,6 +1,6 @@
 package com.example.plugins
 
-import com.example.util.ChromeManager.ChromeWebDriver
+import com.example.plugins.ChromeManager.ChromeWebDriver
 import io.ktor.server.application.*
 
 fun Application.configureChrome() {

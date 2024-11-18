@@ -1,4 +1,4 @@
-package com.example.util
+package com.example.plugins
 
 import co.touchlab.stately.collections.ConcurrentMutableList
 import io.github.bonigarcia.wdm.WebDriverManager
@@ -49,13 +49,12 @@ object ChromeManager {
                 "--disable-gpu",
                 "--no-sandbox",
                 "--disable-blink-features=AutomationControlled",
-                "--incognito",
             )
         }
 
     object ChromeWebDriver {
         const val ID = "webdriver.chrome.driver"
-        const val PATH = "ticketing/driver/chromedriver"
+        const val PATH = "driver/chromedriver"
     }
 
     object ChromeOption {
