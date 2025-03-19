@@ -8,3 +8,7 @@
 
 - 로그인에 대한 정보(로그인 페이지 url, 아이디 input element, 비밀번호 input element, 로그인 버튼 element)를 입력받는다. 
 - 비밀번호는 데이터베이스에 암호화를 해서 저장한다. 
+
+혹은 크롬 익스텐션으로 만들어도 된다.
+참고자료:    
+- https://velog.io/@wisdom_lee/크롬-확장-프로그램Chrome-extension-개발-가이드
