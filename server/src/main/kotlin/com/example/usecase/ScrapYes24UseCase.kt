@@ -5,7 +5,6 @@ import com.example.plugins.ChromeManager.newChrome
 import com.example.util.constant.WebSite.Yes24
 import com.example.util.extension.access
 import com.example.util.extension.always
-import com.example.util.extension.exit
 
 class ScrapYes24UseCase(
     private val yes24Browser: Yes24Browser,
