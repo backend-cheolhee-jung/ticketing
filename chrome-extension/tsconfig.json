@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "target": "ES6",
-    "module": "CommonJS",
+    "module": "ESNext",
     "strict": true,
     "esModuleInterop": true,
     "rootDir": "src",
-    "outDir": "dist"
-  },
-  "include": ["src"]
+    "outDir": "dist",
+    "moduleResolution": "Node",
+    "lib": ["dom", "esnext"],
+    "types": ["chrome"]
+  }
 }
