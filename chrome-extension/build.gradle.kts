@@ -12,6 +12,12 @@ tasks.register<com.github.gradle.node.npm.task.NpmTask>("buildTs") {
     args.set(listOf("run", "build"))
 }
 
+tasks.register<Copy>("copyDist") {
+    dependsOn("buildTs")
+    from("dist")
+    into(layout.buildDirectory.dir("dist").get())
+}
+
 tasks.register("build") {
     dependsOn("buildTs")
 }
