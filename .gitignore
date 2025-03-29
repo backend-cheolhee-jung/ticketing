@@ -37,3 +37,6 @@ out/
 
 ### node modules ###
 node_modules/
+
+dist/
+kotlin-compiler
