@@ -12,11 +12,13 @@ document.getElementById("start-monitoring")?.addEventListener("click", () => {
         width,
         height,
         interval
-    });
+    }).then(r => console.log("Monitoring started."));
     console.log(`Monitoring started with parameters x:${x}, y:${y}, width:${width}, height:${height}, interval:${interval}s`);
 });
 
 document.getElementById("stop-monitoring")?.addEventListener("click", () => {
-    chrome.runtime.sendMessage({ action: "stopMonitoring" });
+    chrome.runtime.sendMessage(
+        {action: "stopMonitoring"}
+    ).then(r => console.log("Monitoring stopped."));
     console.log("Monitoring stopped.");
 });
