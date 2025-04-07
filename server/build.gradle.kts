@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.apache.commons:commons-email:1.6.0")
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("io.insert-koin:koin-ktor:3.5.6")
