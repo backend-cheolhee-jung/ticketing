@@ -44,3 +44,11 @@ compose.desktop {
         }
     }
 }
+
+kotlin {
+    sourceSets.all {
+        languageSettings {
+            enableLanguageFeature("BreakContinueInInlineLambdas")
+        }
+    }
+}
