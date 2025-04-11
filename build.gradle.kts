@@ -15,3 +15,7 @@ allprojects {
 subprojects {
 
 }
+
+kotlin {
+    jvmToolchain(21)
+}
