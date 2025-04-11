@@ -24,7 +24,12 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.0")
 
+    implementation("org.xerial:sqlite-jdbc:3.49.1.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-core:0.55.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.0")
+    implementation("io.github.bonigarcia:webdrivermanager:5.9.2")
+    implementation("org.seleniumhq.selenium:selenium-java:4.30.0")
     implementation(compose.desktop.currentOs)
 }
 
