@@ -1,6 +1,3 @@
-package util
-
-import config.ChromeManager
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import org.openqa.selenium.By

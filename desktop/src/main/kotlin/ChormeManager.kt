@@ -1,5 +1,3 @@
-package config
-
 import io.github.bonigarcia.wdm.WebDriverManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
