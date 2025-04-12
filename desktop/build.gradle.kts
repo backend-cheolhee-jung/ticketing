@@ -24,6 +24,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.0")
 
+    implementation("org.apache.commons:commons-email:1.6.0")
     implementation("org.xerial:sqlite-jdbc:3.49.1.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.55.0")
     implementation("org.jetbrains.exposed:exposed-core:0.55.0")
