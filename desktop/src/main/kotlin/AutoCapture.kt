@@ -1,5 +1,8 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import org.apache.commons.mail.SimpleEmail
+
+private val mailSender = ApacheSimpleMailSender(SimpleEmail())
 
 @Composable
 fun autoCapture(
@@ -19,7 +22,13 @@ fun autoCapture(
         else {
             oldImage.deleteImage()
             newImage.saveImage()
-//            send mail
+            mailSender.send(
+                Mail(
+                    to = "ekxk1234@gmail.com",
+                    subject = "이미지 바꼈습니다.",
+                    body = "이미지 바꼈습니다.",
+                )
+            )
         }
     }
 }
