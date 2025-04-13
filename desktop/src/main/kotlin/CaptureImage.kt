@@ -3,6 +3,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Rectangle
 import java.awt.Robot
 import java.awt.image.BufferedImage
@@ -37,25 +38,55 @@ data class CaptureImage(
 
     fun saveImage() {
         ImageIO.write(image, "png", File(filePath))
-        CaptureImages.insert {
-            it[x] = this@CaptureImage.x
-            it[y] = this@CaptureImage.y
-            it[width] = this@CaptureImage.width
-            it[height] = this@CaptureImage.height
-            it[filePath] = this@CaptureImage.filePath
+        transaction {
+            CaptureImages.insert {
+                it[x] = this@CaptureImage.x
+                it[y] = this@CaptureImage.y
+                it[width] = this@CaptureImage.width
+                it[height] = this@CaptureImage.height
+                it[filePath] = this@CaptureImage.filePath
+            }
         }
     }
 
     fun deleteImage() {
         File(filePath).delete()
-        CaptureImages.deleteWhere {
-            filePath eq this@CaptureImage.filePath
+        transaction {
+            CaptureImages.deleteWhere {
+                filePath eq this@CaptureImage.filePath
+            }
         }
     }
 
-    operator fun compareTo(other: CaptureImage): Int {
-        val isSame = image == other.image
-        return if (isSame) 0 else 1
+    override fun equals(other: Any?): Boolean {
+        if (other == null) return false
+        if (other !is CaptureImage) return false
+        if (this === other) return true
+
+        val img1 = this.image
+        val img2 = other.image
+
+        if (img1.width != img2.width || img1.height != img2.height) return false
+
+        for (x in 0 until img1.width) {
+            for (y in 0 until img1.height) {
+                if (img1.getRGB(x, y) != img2.getRGB(x, y)) {
+                    return false
+                }
+            }
+        }
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = 17
+        for (x in 0 until image.width) {
+            for (y in 0 until image.height) {
+                result = 31 * result + image.getRGB(x, y)
+            }
+        }
+        return result
     }
 
     companion object {
