@@ -3,6 +3,7 @@ import org.jetbrains.exposed.sql.Table
 
 object Websites: Table("website_urls") {
     val id = long("id").autoIncrement()
+    val name = varchar("name", 255)
     val url = varchar("url", 255).uniqueIndex("url_unique")
     val loginUrl = varchar("login_url", 255)
     val email = varchar("email", 255)
@@ -15,6 +16,7 @@ object Websites: Table("website_urls") {
 }
 
 data class Website(
+    val name: String,
     val url: String,
     val loginUrl: String,
     val email: String,
@@ -26,6 +28,7 @@ data class Website(
     companion object {
         @JvmStatic
         fun of(
+            name: String,
             url: String,
             loginUrl: String,
             email: String,
@@ -34,6 +37,7 @@ data class Website(
             passwordInput: String,
             loginButtonElement: String,
         ) = Website(
+            name = name,
             url = url,
             loginUrl = loginUrl,
             email = email,
@@ -48,6 +52,7 @@ data class Website(
             resultRow: ResultRow,
         ) =
             Website(
+                name = resultRow[Websites.name],
                 url = resultRow[Websites.url],
                 loginUrl = resultRow[Websites.loginUrl],
                 email = resultRow[Websites.email],
