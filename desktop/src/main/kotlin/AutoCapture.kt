@@ -1,34 +1,58 @@
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import org.apache.commons.mail.SimpleEmail
+import org.openqa.selenium.chrome.ChromeDriver
 
 private val mailSender = ApacheSimpleMailSender(SimpleEmail())
 
-@Composable
-fun autoCapture(
+suspend fun autoCapture(
+    chromeDriver: ChromeDriver,
     oldImage: CaptureImage,
 ) {
-    LaunchedEffect(Unit) {
-        val newImage = CaptureImage.of(
-            oldImage.x,
-            oldImage.y,
-            oldImage.width,
-            oldImage.height,
-        )
+    chromeDriver.navigate().refresh()
 
-        newImage.capture()
+    val newImage = CaptureImage.of(
+        oldImage.x,
+        oldImage.y,
+        oldImage.width,
+        oldImage.height,
+    )
 
-        if (oldImage == newImage) return@LaunchedEffect
-        else {
-            oldImage.deleteImage()
-            newImage.saveImage()
-            mailSender.send(
-                Mail(
-                    to = "ekxk1234@gmail.com",
-                    subject = "이미지 바꼈습니다.",
-                    body = "이미지 바꼈습니다.",
-                )
+    newImage.capture()
+
+    if (oldImage == newImage) return
+    else {
+        oldImage.deleteImage()
+        newImage.saveImage()
+        mailSender.send(
+            Mail(
+                to = "ekxk1234@gmail.com",
+                subject = "이미지 바꼈습니다.",
+                body = "이미지 바꼈습니다.",
             )
+        )
+    }
+}
+
+private suspend fun disableNotification(
+    chrome: ChromeDriver,
+) {
+    withContext(IO) {
+        with(chrome) {
+            val startTime = System.currentTimeMillis()
+
+            while (windowHandles.size < 2) {
+                if (startTime.isOverOneSecond()) return@withContext
+                delay(100)
+            }
+
+            if (windowHandles.size > 1) {
+                switchTo().window(windowHandles.last()).close()
+                switchTo().window(windowHandles.first())
+            }
         }
     }
 }
+
+private fun Long.isOverOneSecond() = System.currentTimeMillis() - this > 1000L
