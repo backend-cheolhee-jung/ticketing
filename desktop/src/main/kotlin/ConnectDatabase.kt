@@ -1,14 +1,11 @@
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
     fun connect() {
-        transaction {
-            Database.connect(
-                url = DatabaseConfig.URL,
-                driver = DatabaseConfig.DRIVER
-            )
-        }
+        Database.connect(
+            url = DatabaseConfig.URL,
+            driver = DatabaseConfig.DRIVER
+        )
     }
 }
 

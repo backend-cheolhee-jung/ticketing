@@ -22,8 +22,6 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 @Preview
 fun mainPage() {
-    DatabaseFactory.connect()
-
     var websiteName by remember { mutableStateOf("등록") }
     var isDialogOpen by remember { mutableStateOf(false) }
 
@@ -68,53 +66,56 @@ fun mainPage() {
     }
 }
 
-fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
-        mainPage()
+fun main() {
+    DatabaseFactory.connect()
+    application {
+        Window(onCloseRequest = ::exitApplication) {
+            mainPage()
 
-        LaunchedEffect(Unit) {
-            withContext(Dispatchers.IO) {
-                val image = transaction {
-                    CaptureImages.selectAll()
-                        .orderBy(CaptureImages.id, SortOrder.DESC)
-                        .limit(1)
-                        .map(CaptureImage::of)
-                        .first()
-                }
-
-                val website = transaction {
-                    Websites.selectAll()
-                        .orderBy(Websites.id, SortOrder.DESC)
-                        .limit(1)
-                        .map(Website::of)
-                        .first()
-                }
-
-                val chromeDriver = ChromeManager.newChrome()
-
+            LaunchedEffect(Unit) {
                 withContext(Dispatchers.IO) {
-                    with(chromeDriver) {
-                        access(website.loginUrl)
-                        val idInput = website.idInput.toXPath()
-                        val passwordInput = website.passwordInput.toXPath()
-                        val loginButton = website.loginButtonElement.toXPath()
+                    val image = transaction {
+                        CaptureImages.selectAll()
+                            .orderBy(CaptureImages.id, SortOrder.DESC)
+                            .limit(1)
+                            .map(CaptureImage::of)
+                            .first()
+                    }
 
-                        findElement(idInput).sendKeys(website.email)
-                        findElement(passwordInput).sendKeys(website.password)
-                        findElement(loginButton).click()
+                    val website = transaction {
+                        Websites.selectAll()
+                            .orderBy(Websites.id, SortOrder.DESC)
+                            .limit(1)
+                            .map(Website::of)
+                            .first()
+                    }
 
-                        access(website.url)
+                    val chromeDriver = ChromeManager.newChrome()
 
-                        while (true) {
-                            runCatching {
-                                autoCapture(chromeDriver, image)
-                            }.onFailure {
-                                it.printStackTrace()
-                                ChromeManager.closeSessions()
-                                break
+                    withContext(Dispatchers.IO) {
+                        with(chromeDriver) {
+                            access(website.loginUrl)
+                            val idInput = website.idInput.toXPath()
+                            val passwordInput = website.passwordInput.toXPath()
+                            val loginButton = website.loginButtonElement.toXPath()
+
+                            findElement(idInput).sendKeys(website.email)
+                            findElement(passwordInput).sendKeys(website.password)
+                            findElement(loginButton).click()
+
+                            access(website.url)
+
+                            while (true) {
+                                runCatching {
+                                    autoCapture(chromeDriver, image)
+                                }.onFailure {
+                                    it.printStackTrace()
+                                    ChromeManager.closeSessions()
+                                    break
+                                }
+
+                                delay(5.seconds)
                             }
-
-                            delay(5.seconds)
                         }
                     }
                 }
