@@ -57,24 +57,14 @@ fun mainPage() {
                 onDismiss = { isDialogOpen = false },
                 onSubmit = {
                     websiteName =
-                        runCatching {
-                            transaction {
-                                Websites.selectAll()
-                                    .orderBy(Websites.id, SortOrder.DESC)
-                                    .limit(1)
-                                    .map(Website::of)
-                                    .first()
-                                    .name
-                            }
-                        }.onFailure {
-                            it.printStackTrace()
-                            JOptionPane.showMessageDialog(
-                                null,
-                                "웹사이트 정보를 불러오는 중 오류가 발생했습니다:\n${it.localizedMessage}",
-                                "오류",
-                                JOptionPane.WARNING_MESSAGE
-                            )
-                        }.getOrThrow()
+                        transaction {
+                            Websites.selectAll()
+                                .orderBy(Websites.id, SortOrder.DESC)
+                                .limit(1)
+                                .map(Website::of)
+                                .first()
+                                .name
+                        }
                     isDialogOpen = false
                 }
             )
