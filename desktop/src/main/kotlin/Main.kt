@@ -22,7 +22,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 @Preview
 fun mainPage() {
-    var websiteName by remember { mutableStateOf("등록") }
+    var websiteName by remember { mutableStateOf<String?>(null) }
     var isDialogOpen by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -31,14 +31,18 @@ fun mainPage() {
                 .orderBy(Websites.id, SortOrder.DESC)
                 .limit(1)
                 .map(Website::of)
-                .first()
-                .name
+                .firstOrNull()
+                ?.name
         }
     }
 
     MaterialTheme {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("웹사이트 이름: $websiteName")
+            if (websiteName == null) {
+                Text("등록된 웹사이트가 없습니다.")
+            } else {
+                Text("등록된 웹사이트:")
+            }
 
             Spacer(Modifier.height(8.dp))
 
@@ -79,8 +83,8 @@ fun main() {
                             .orderBy(CaptureImages.id, SortOrder.DESC)
                             .limit(1)
                             .map(CaptureImage::of)
-                            .first()
-                    }
+                            .firstOrNull()
+                    } ?: return@withContext
 
                     val website = transaction {
                         Websites.selectAll()
