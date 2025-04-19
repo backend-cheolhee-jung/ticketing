@@ -17,6 +17,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import javax.swing.JOptionPane
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -55,15 +56,26 @@ fun mainPage() {
             websiteRegisterDialog(
                 onDismiss = { isDialogOpen = false },
                 onSubmit = {
+                    websiteName =
+                        runCatching {
+                            transaction {
+                                Websites.selectAll()
+                                    .orderBy(Websites.id, SortOrder.DESC)
+                                    .limit(1)
+                                    .map(Website::of)
+                                    .first()
+                                    .name
+                            }
+                        }.onFailure {
+                            it.printStackTrace()
+                            JOptionPane.showMessageDialog(
+                                null,
+                                "웹사이트 정보를 불러오는 중 오류가 발생했습니다:\n${it.localizedMessage}",
+                                "오류",
+                                JOptionPane.WARNING_MESSAGE
+                            )
+                        }.getOrThrow()
                     isDialogOpen = false
-                    websiteName = transaction {
-                        Websites.selectAll()
-                            .orderBy(Websites.id, SortOrder.DESC)
-                            .limit(1)
-                            .map(Website::of)
-                            .first()
-                            .name
-                    }
                 }
             )
         }
