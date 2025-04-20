@@ -17,9 +17,12 @@ object ChromeManager {
         chromeDrivers.clear()
     }
 
-    suspend fun newChrome() =
+    suspend fun newChrome(
+        headless: Boolean = false,
+    ) =
         withContext(Dispatchers.IO) {
-            ChromeDriver(chromeOptions)
+            val chromeOption = chromeOptions.apply { if (headless) addArguments("--headless") }
+            ChromeDriver(chromeOption)
                 .also {
                     it.executeCdpCommand(
                         "Page.addScriptToEvaluateOnNewDocument",
@@ -37,6 +40,7 @@ object ChromeManager {
         ChromeOptions().apply {
             setBinary(ChromeOption.BINARY)
             addArguments(
+                "--remote-debugging-port=9222",
                 "--start-maximized",
                 "--disable-popup-blocking",
                 "--disable-notifications",

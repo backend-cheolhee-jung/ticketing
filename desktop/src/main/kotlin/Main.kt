@@ -21,11 +21,10 @@ import kotlin.time.Duration.Companion.seconds
 fun main() {
     DatabaseFactory.connect()
     application {
-        var demonProcess by remember { mutableStateOf(DemonProcess.UNREGISTER) }
-
         Window(onCloseRequest = ::exitApplication) {
             var websiteName by remember { mutableStateOf<String?>(null) }
             var isDialogOpen by remember { mutableStateOf(false) }
+            var demonProcess by remember { mutableStateOf(DemonProcess.UNREGISTER) }
 
             websiteName = transaction {
                 Websites.selectAll()
@@ -35,6 +34,10 @@ fun main() {
                     .firstOrNull()
                     ?.name
             }
+
+            demonProcess =
+                if (websiteName == null) DemonProcess.UNREGISTER
+                else DemonProcess.START
 
             MaterialTheme {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -71,6 +74,13 @@ fun main() {
             LaunchedEffect(demonProcess) {
                 if (demonProcess == DemonProcess.UNREGISTER) return@LaunchedEffect
 
+                val chromeDriver =
+                    when (demonProcess) {
+                        DemonProcess.REGISTER -> ChromeManager.newChrome()
+                        DemonProcess.START -> ChromeManager.newChrome(headless = true)
+                        else -> throw IllegalStateException("Invalid demon process state")
+                    }
+
                 withContext(Dispatchers.IO) {
                     val image = transaction {
                         CaptureImages.selectAll()
@@ -87,8 +97,6 @@ fun main() {
                             .map(Website::of)
                             .first()
                     }
-
-                    val chromeDriver = ChromeManager.newChrome()
 
                     withContext(Dispatchers.IO) {
                         with(chromeDriver) {
