@@ -46,7 +46,6 @@ fun websiteRegisterDialog(
         resizable = true,
     ) {
         Column(modifier = Modifier.padding(16.dp).fillMaxSize()) {
-
             Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                 OutlinedTextField(
                     value = name,
@@ -64,30 +63,30 @@ fun websiteRegisterDialog(
 
             Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                 OutlinedTextField(
-                    value = loginUrl,
-                    onValueChange = { loginUrl = it },
-                    label = { Text("로그인 URL") },
-                    modifier = Modifier.weight(1f).padding(end = 4.dp)
-                )
-                OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("이메일") },
+                    label = { Text("아이디") },
                     modifier = Modifier.weight(1f).padding(start = 4.dp)
                 )
-            }
-
-            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("비밀번호") },
                     modifier = Modifier.weight(1f).padding(end = 4.dp)
                 )
+            }
+
+            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                OutlinedTextField(
+                    value = loginUrl,
+                    onValueChange = { loginUrl = it },
+                    label = { Text("로그인 URL") },
+                    modifier = Modifier.weight(1f).padding(end = 4.dp)
+                )
                 OutlinedTextField(
                     value = idInput,
                     onValueChange = { idInput = it },
-                    label = { Text("ID 입력 필드") },
+                    label = { Text("ID Input Element") },
                     modifier = Modifier.weight(1f).padding(start = 4.dp)
                 )
             }
@@ -96,13 +95,13 @@ fun websiteRegisterDialog(
                 OutlinedTextField(
                     value = passwordInput,
                     onValueChange = { passwordInput = it },
-                    label = { Text("비밀번호 입력 필드") },
+                    label = { Text("비밀번호 Input Element") },
                     modifier = Modifier.weight(1f).padding(end = 4.dp)
                 )
                 OutlinedTextField(
                     value = loginButtonElement,
                     onValueChange = { loginButtonElement = it },
-                    label = { Text("로그인 버튼 요소") },
+                    label = { Text("로그인 Button Element") },
                     modifier = Modifier.weight(1f).padding(start = 4.dp)
                 )
             }
