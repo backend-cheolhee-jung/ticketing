@@ -12,7 +12,14 @@ object ChromeManager {
 
     val chromeDrivers = mutableListOf<ChromeDriver>()
 
-    fun closeSessions() {
+    fun closeSession(
+        driver: ChromeDriver,
+    ) {
+        driver.quit()
+        chromeDrivers.remove(driver)
+    }
+
+    fun closeAllSessions() {
         chromeDrivers.forEach { it.quit() }
         chromeDrivers.clear()
     }
