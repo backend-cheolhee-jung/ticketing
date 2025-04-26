@@ -6,11 +6,10 @@ import org.openqa.selenium.chrome.ChromeDriver
 
 private val mailSender = ApacheSimpleMailSender(SimpleEmail())
 
-suspend fun autoCapture(
-    chromeDriver: ChromeDriver,
+suspend fun ChromeDriver.autoCapture(
     oldImage: CaptureImage,
 ) {
-    chromeDriver.navigate().refresh()
+    this.navigate().refresh()
 
     val newImage = CaptureImage.of(
         oldImage.x,
