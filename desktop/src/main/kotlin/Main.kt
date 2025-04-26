@@ -10,21 +10,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.time.Duration.Companion.seconds
 
+@OptIn(DelicateCoroutinesApi::class)
 fun main() {
     DatabaseFactory.connect()
+    val crawler = Crawler()
     application {
         Window(onCloseRequest = ::exitApplication) {
             var websiteName by remember { mutableStateOf<String?>(null) }
             var isDialogOpen by remember { mutableStateOf(false) }
-            var demonProcess by remember { mutableStateOf(DemonProcess.UNREGISTER) }
+            var demonProcessStatus by remember { mutableStateOf(DemonProcessStatus.UNREGISTER) }
 
             websiteName = transaction {
                 Websites.selectAll()
@@ -35,9 +34,9 @@ fun main() {
                     ?.name
             }
 
-            demonProcess =
-                if (websiteName == null) DemonProcess.UNREGISTER
-                else DemonProcess.START
+            demonProcessStatus =
+                if (websiteName == null) DemonProcessStatus.UNREGISTER
+                else DemonProcessStatus.START
 
             MaterialTheme {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -64,67 +63,28 @@ fun main() {
                                         .first()
                                         .name
                                 }
+
                             isDialogOpen = false
-                            demonProcess = DemonProcess.REGISTER
+                            demonProcessStatus = DemonProcessStatus.REGISTER
+
+                            GlobalScope.launch {
+                                crawler.allStop()
+                                val chromeDriver = ChromeManager.newChrome()
+                                crawler.start(chromeDriver)
+                            }
                         }
                     )
                 }
             }
 
-            LaunchedEffect(demonProcess) {
-                if (demonProcess == DemonProcess.UNREGISTER) return@LaunchedEffect
-
-                val chromeDriver =
-                    when (demonProcess) {
-                        DemonProcess.REGISTER -> ChromeManager.newChrome()
-                        DemonProcess.START -> ChromeManager.newChrome(headless = true)
-                        else -> throw IllegalStateException("Invalid demon process state")
-                    }
-
-                withContext(Dispatchers.IO) {
-                    val image = transaction {
-                        CaptureImages.selectAll()
-                            .orderBy(CaptureImages.id, SortOrder.DESC)
-                            .limit(1)
-                            .map(CaptureImage::of)
-                            .firstOrNull()
-                    } ?: return@withContext
-
-                    val website = transaction {
-                        Websites.selectAll()
-                            .orderBy(Websites.id, SortOrder.DESC)
-                            .limit(1)
-                            .map(Website::of)
-                            .first()
-                    }
-
-                    withContext(Dispatchers.IO) {
-                        with(chromeDriver) {
-                            access(website.loginUrl)
-                            val idInput = website.idInput.toXPath()
-                            val passwordInput = website.passwordInput.toXPath()
-                            val loginButton = website.loginButtonElement.toXPath()
-
-                            findElement(idInput).sendKeys(website.email)
-                            findElement(passwordInput).sendKeys(website.password)
-                            findElement(loginButton).click()
-
-                            access(website.url)
-
-                            while (true) {
-                                runCatching {
-                                    autoCapture(chromeDriver, image)
-                                }.onFailure {
-                                    it.printStackTrace()
-                                    ChromeManager.closeSessions()
-                                    break
-                                }
-
-                                delay(5.seconds)
-                            }
-                        }
-                    }
+            LaunchedEffect(demonProcessStatus) {
+                val chromeDriver = when (demonProcessStatus) {
+                    DemonProcessStatus.UNREGISTER -> return@LaunchedEffect
+                    DemonProcessStatus.REGISTER -> ChromeManager.newChrome()
+                    DemonProcessStatus.START -> ChromeManager.newChrome(headless = true)
                 }
+
+                crawler.start(chromeDriver)
             }
         }
     }
