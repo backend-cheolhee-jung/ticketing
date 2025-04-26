@@ -1,4 +1,4 @@
-enum class DemonProcess {
+enum class DemonProcessStatus {
     UNREGISTER,
     REGISTER,
     START,
