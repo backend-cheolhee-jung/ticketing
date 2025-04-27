@@ -20,7 +20,10 @@ fun main() {
     DatabaseFactory.connect()
     val crawler = Crawler()
     application {
-        Window(onCloseRequest = ::exitApplication) {
+        Window(onCloseRequest = {
+            ChromeManager.closeAllSessions()
+            exitApplication()
+        }) {
             var websiteName by remember { mutableStateOf<String?>(null) }
             var isDialogOpen by remember { mutableStateOf(false) }
             var demonProcessStatus by remember { mutableStateOf(DemonProcessStatus.UNREGISTER) }

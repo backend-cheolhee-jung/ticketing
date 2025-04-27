@@ -8,8 +8,7 @@ import org.openqa.selenium.chrome.ChromeDriver
 import kotlin.time.Duration.Companion.seconds
 
 class Crawler {
-    @Volatile
-    private var running = false
+    @Volatile private var running = false
 
     suspend fun  start(
         chromeDriver: ChromeDriver,
