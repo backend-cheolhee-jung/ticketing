@@ -6,8 +6,7 @@ import org.openqa.selenium.chrome.ChromeOptions
 
 object ChromeManager {
     init {
-        System.setProperty(ChromeWebDriver.ID, ChromeWebDriver.PATH)
-        WebDriverManager.chromedriver().setup()
+        WebDriverManager.chromedriver().clearResolutionCache().setup()
     }
 
     val chromeDrivers = mutableListOf<ChromeDriver>()
@@ -28,7 +27,8 @@ object ChromeManager {
         headless: Boolean = false,
     ) =
         withContext(Dispatchers.IO) {
-            val chromeOption = chromeOptions.apply { if (headless) addArguments("--headless") }
+            val chromeOption = chromeOptions
+//                .apply { if (headless) addArguments("--headless") }
             ChromeDriver(chromeOption)
                 .also {
                     it.executeCdpCommand(
@@ -47,7 +47,6 @@ object ChromeManager {
         ChromeOptions().apply {
             setBinary(ChromeOption.BINARY)
             addArguments(
-                "--remote-debugging-port=9222",
                 "--start-maximized",
                 "--disable-popup-blocking",
                 "--disable-notifications",
@@ -60,11 +59,6 @@ object ChromeManager {
                 "--disable-blink-features=AutomationControlled",
             )
         }
-
-    object ChromeWebDriver {
-        const val ID = "webdriver.chrome.driver"
-        const val PATH = "driver/chromedriver"
-    }
 
     object ChromeOption {
         const val BINARY = ""
