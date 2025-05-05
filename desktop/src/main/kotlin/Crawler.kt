@@ -8,9 +8,10 @@ import org.openqa.selenium.chrome.ChromeDriver
 import kotlin.time.Duration.Companion.seconds
 
 class Crawler {
-    @Volatile private var running = false
+    @Volatile
+    private var running = false
 
-    suspend fun  start(
+    suspend fun start(
         chromeDriver: ChromeDriver,
     ) {
         withContext(Dispatchers.IO) {
@@ -32,14 +33,7 @@ class Crawler {
 
             withContext(Dispatchers.IO) {
                 with(chromeDriver) {
-                    access(website.loginUrl)
-                    val idInput = website.idInput.toXPath()
-                    val passwordInput = website.passwordInput.toXPath()
-                    val loginButton = website.loginButtonElement.toXPath()
-
-                    findElement(idInput).sendKeys(website.email)
-                    findElement(passwordInput).sendKeys(website.password)
-                    findElement(loginButton).click()
+                    chromeDriver.login(website)
 
                     access(website.url)
                     running = true
@@ -60,12 +54,51 @@ class Crawler {
         }
     }
 
-    suspend fun allStop() {
+    suspend fun visitHomePage(
+        chromeDriver: ChromeDriver,
+    ) {
         withContext(Dispatchers.IO) {
-            if (running) {
-                ChromeManager.closeAllSessions()
-                running = false
+            val website = transaction {
+                Websites.selectAll()
+                    .orderBy(Websites.id, SortOrder.DESC)
+                    .limit(1)
+                    .map(Website::of)
+                    .firstOrNull()
+            } ?: return@withContext
+
+            if (running) ChromeManager.closeSession(chromeDriver)
+            running = true
+
+            with(chromeDriver) {
+                chromeDriver.login(website)
+                access(website.url)
+
+
             }
+            running = false
+        }
+    }
+
+    private suspend fun ChromeDriver.login(
+        website: Website,
+    ) {
+        withContext(Dispatchers.IO) {
+            access(website.loginUrl)
+
+            val idInput = website.idInput.toXPath()
+            val passwordInput = website.passwordInput.toXPath()
+            val loginButton = website.loginButtonElement.toXPath()
+
+            findElement(idInput).sendKeys(website.idValue)
+            findElement(passwordInput).sendKeys(website.password)
+            findElement(loginButton).click()
+        }
+    }
+
+    fun allStop() {
+        if (running) {
+            ChromeManager.closeAllSessions()
+            running = false
         }
     }
 }
