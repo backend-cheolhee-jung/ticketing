@@ -10,12 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import kotlinx.coroutines.*
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
-@OptIn(DelicateCoroutinesApi::class)
 fun main() {
     DatabaseFactory.connect()
     val crawler = Crawler()
@@ -42,6 +40,7 @@ fun main() {
                 else DemonProcessStatus.START
 
             MaterialTheme {
+                captureShortcut()
                 Column(modifier = Modifier.padding(16.dp)) {
                     if (websiteName == null) Text("등록된 웹사이트가 없습니다.")
                     else Text("등록된 웹사이트: $websiteName")
@@ -69,12 +68,6 @@ fun main() {
 
                             isDialogOpen = false
                             demonProcessStatus = DemonProcessStatus.REGISTER
-
-                            GlobalScope.launch {
-                                crawler.allStop()
-                                val chromeDriver = ChromeManager.newChrome()
-                                crawler.start(chromeDriver)
-                            }
                         }
                     )
                 }
