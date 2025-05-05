@@ -28,7 +28,7 @@ object ChromeManager {
     ) =
         withContext(Dispatchers.IO) {
             val chromeOption = chromeOptions
-//                .apply { if (headless) addArguments("--headless") }
+                .apply { if (headless) addArguments("--headless") }
             ChromeDriver(chromeOption)
                 .also {
                     it.executeCdpCommand(
