@@ -7,6 +7,7 @@ object Websites : Table("website_urls") {
     val name = varchar("name", 255).uniqueIndex().check { it.trim() neq "" }
     val url = varchar("url", 255).uniqueIndex("url_unique").check { it.trim() neq "" }
     val loginUrl = varchar("login_url", 255).check { it.trim() neq "" }
+    val idValue = varchar("id_value", 255).check { it.trim() neq "" }
     val email = varchar("email", 255).check { it.trim() neq "" }.check { it like "%@%" }
     val password = varchar("password", 255).check { it.trim() neq "" }
     val idInput = varchar("id_input", 255).check { it.trim() neq "" }
@@ -19,8 +20,9 @@ object Websites : Table("website_urls") {
 data class Website(
     val name: String,
     val url: String,
-    val loginUrl: String,
     val email: String,
+    val loginUrl: String,
+    val idValue: String,
     val password: String,
     val idInput: String,
     val passwordInput: String,
@@ -31,8 +33,9 @@ data class Website(
         fun of(
             name: String,
             url: String,
-            loginUrl: String,
             email: String,
+            idValue: String,
+            loginUrl: String,
             password: String,
             idInput: String,
             passwordInput: String,
@@ -40,8 +43,9 @@ data class Website(
         ) = Website(
             name = name,
             url = url,
-            loginUrl = loginUrl,
             email = email,
+            idValue = idValue,
+            loginUrl = loginUrl,
             password = password,
             idInput = idInput,
             passwordInput = passwordInput,
@@ -56,6 +60,7 @@ data class Website(
                 name = resultRow[Websites.name],
                 url = resultRow[Websites.url],
                 loginUrl = resultRow[Websites.loginUrl],
+                idValue = resultRow[Websites.idValue],
                 email = resultRow[Websites.email],
                 password = resultRow[Websites.password],
                 idInput = resultRow[Websites.idInput],
