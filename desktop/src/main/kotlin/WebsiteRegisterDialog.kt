@@ -179,23 +179,29 @@ fun websiteRegisterDialog(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(onClick = {
-                    runCatching {
-                        transaction {
-                            Websites.insert {
-                                it[Websites.name] = name.trim()
-                                it[Websites.url] = url.trim()
-                                it[Websites.loginUrl] = loginUrl.trim()
-                                it[Websites.email] = email.trim()
-                                it[Websites.idValue] = idValue.trim()
-                                it[Websites.password] = password.trim()
-                                it[Websites.idInput] = idInput.trim()
-                                it[Websites.passwordInput] = passwordInput.trim()
-                                it[Websites.loginButtonElement] = loginButtonElement.trim()
-                            }
+                    require(name.isNotBlank()) { "사이트명을 입력하세요." }
+                    require(url.isNotBlank()) { "URL을 입력하세요." }
+                    require(loginUrl.isNotBlank()) { "로그인 URL을 입력하세요." }
+                    require(idValue.isNotBlank()) { "아이디를 입력하세요." }
+                    require(password.isNotBlank()) { "비밀번호를 입력하세요." }
+                    require(idInput.isNotBlank()) { "ID Input Element를 입력하세요." }
+                    require(passwordInput.isNotBlank()) { "비밀번호 Input Element를 입력하세요." }
+                    require(loginButtonElement.isNotBlank()) { "로그인 Button Element를 입력하세요." }
+                    require(email.isNotBlank()) { "연락 받을 이메일을 입력하세요." }
+                    require(email.matches(EMAIL_REGEX)) { "이메일 형식이 올바르지 않습니다." }
+
+                    transaction {
+                        Websites.insert {
+                            it[Websites.name] = name.trim()
+                            it[Websites.url] = url.trim()
+                            it[Websites.loginUrl] = loginUrl.trim()
+                            it[Websites.email] = email.trim()
+                            it[Websites.idValue] = idValue.trim()
+                            it[Websites.password] = password.trim()
+                            it[Websites.idInput] = idInput.trim()
+                            it[Websites.passwordInput] = passwordInput.trim()
+                            it[Websites.loginButtonElement] = loginButtonElement.trim()
                         }
-                    }.onFailure { error ->
-                        if (error is ExposedSQLException) error.showDialogMessage()
-                        else error.printStackTrace()
                     }
                     onSubmit()
                 }) {
@@ -228,40 +234,7 @@ private operator fun <E> List<E>.component9(): E {
     return this[8]
 }
 
-private fun ExposedSQLException.showDialogMessage() {
-    val message = this.message
-    checkNotNull(message)
-
-    val dialogMessage: String
-
-    if (message.contains("UNIQUE constraint failed")) {
-        dialogMessage = when {
-            message.contains("name") -> "사이트명은 이미 존재합니다."
-            message.contains("url") -> "URL은 이미 존재합니다."
-            message.contains("login_url") -> "로그인 URL은 이미 존재합니다."
-            message.contains("email") -> "이메일은 이미 존재합니다."
-            else -> "알 수 없는 오류입니다."
-        }
-    } else if (message.contains("SQLITE_CONSTRAINT_CHECK")) {
-        dialogMessage = when {
-            message.contains("check_website_urls_0") -> "사이트명은 비어있을 수 없습니다."
-            message.contains("check_website_urls_1") -> "URL은 비어있을 수 없습니다."
-            message.contains("check_website_urls_2") -> "Login URL은 비어있을 수 없습니다."
-            message.contains("check_website_urls_3") -> "이메일은 비어있을 수 없습니다."
-            message.contains("check_website_urls_4") -> "비밀번호는 비어있을 수 없습니다."
-            message.contains("check_website_urls_5") -> "ID 입력 필드는 비어있을 수 없습니다."
-            message.contains("check_website_urls_6") -> "비밀번호 입력 필드는 비어있을 수 없습니다."
-            message.contains("check_website_urls_7") -> "로그인 버튼 요소는 비어있을 수 없습니다."
-            else -> "알 수 없는 오류입니다."
-        }
-    } else {
-        dialogMessage = "알 수 없는 오류입니다."
-    }
-
-    JOptionPane.showMessageDialog(
-        null,
-        dialogMessage,
-        "Error",
-        JOptionPane.ERROR_MESSAGE
-    )
-}
+private val EMAIL_REGEX = Regex(
+    pattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+    options = setOf(RegexOption.IGNORE_CASE)
+)
