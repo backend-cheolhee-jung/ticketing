@@ -31,6 +31,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.0")
     implementation("io.github.bonigarcia:webdrivermanager:5.9.2")
     implementation("org.seleniumhq.selenium:selenium-java:4.30.0")
+    implementation("com.github.kwhat:jnativehook:2.2.2")
     implementation(compose.desktop.currentOs)
 }
 
