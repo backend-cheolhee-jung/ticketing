@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -22,6 +23,18 @@ fun main() {
             ChromeManager.closeAllSessions()
             exitApplication()
         }) {
+            registerGlobalEvent(
+                NativeKeyEvent.VC_CONTROL,
+                NativeKeyEvent.VC_SHIFT,
+                NativeKeyEvent.VC_C,
+            ) {
+                showDragToCaptureOverlay { x, y, w, h ->
+                    val image = CaptureImage.of(x, y, w, h)
+                    image.capture()
+                    image.saveImage()
+                }
+            }
+
             var websiteName by remember { mutableStateOf<String?>(null) }
             var isDialogOpen by remember { mutableStateOf(false) }
             var demonProcessStatus by remember { mutableStateOf(DemonProcessStatus.UNREGISTER) }
@@ -40,7 +53,6 @@ fun main() {
                 else DemonProcessStatus.START
 
             MaterialTheme {
-                captureShortcut()
                 Column(modifier = Modifier.padding(16.dp)) {
                     if (websiteName == null) Text("등록된 웹사이트가 없습니다.")
                     else Text("등록된 웹사이트: $websiteName")
@@ -74,13 +86,20 @@ fun main() {
             }
 
             LaunchedEffect(demonProcessStatus) {
-                val chromeDriver = when (demonProcessStatus) {
+                when (demonProcessStatus) {
                     DemonProcessStatus.UNREGISTER -> return@LaunchedEffect
-                    DemonProcessStatus.REGISTER -> ChromeManager.newChrome()
-                    DemonProcessStatus.START -> ChromeManager.newChrome(headless = true)
-                }
+                    DemonProcessStatus.REGISTER -> ChromeManager.newChrome().apply {
+                        showDragToCaptureOverlay { x, y, w, h ->
+                            val image = CaptureImage.of(x, y, w, h)
+                            image.capture()
+                            image.saveImage()
+                        }
+                    }
 
-                crawler.start(chromeDriver)
+                    DemonProcessStatus.START -> ChromeManager.newChrome(headless = true).apply {
+                        crawler.start(this)
+                    }
+                }
             }
         }
     }
