@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogState
@@ -45,6 +46,7 @@ fun websiteRegisterDialog(
     var idInput by remember { mutableStateOf("") }
     var passwordInput by remember { mutableStateOf("") }
     var loginButtonElement by remember { mutableStateOf("") }
+    val errorMessage = remember { mutableStateOf<String?>(null) }
 
     fun Modifier.tabToNext(
         currentIndex: Int,
@@ -177,34 +179,41 @@ fun websiteRegisterDialog(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(onClick = {
-                    require(name.isNotBlank()) { "사이트명을 입력하세요." }
-                    require(url.isNotBlank()) { "URL을 입력하세요." }
-                    require(loginUrl.isNotBlank()) { "로그인 URL을 입력하세요." }
-                    require(idValue.isNotBlank()) { "아이디를 입력하세요." }
-                    require(password.isNotBlank()) { "비밀번호를 입력하세요." }
-                    require(idInput.isNotBlank()) { "ID Input Element를 입력하세요." }
-                    require(passwordInput.isNotBlank()) { "비밀번호 Input Element를 입력하세요." }
-                    require(loginButtonElement.isNotBlank()) { "로그인 Button Element를 입력하세요." }
-                    require(email.isNotBlank()) { "연락 받을 이메일을 입력하세요." }
-                    require(email.matches(EMAIL_REGEX)) { "이메일 형식이 올바르지 않습니다." }
+                    try {
+                        require(name.isNotBlank()) { "사이트명을 입력하세요." }
+                        require(url.isNotBlank()) { "URL을 입력하세요." }
+                        require(loginUrl.isNotBlank()) { "로그인 URL을 입력하세요." }
+                        require(idValue.isNotBlank()) { "아이디를 입력하세요." }
+                        require(password.isNotBlank()) { "비밀번호를 입력하세요." }
+                        require(idInput.isNotBlank()) { "ID Input Element를 입력하세요." }
+                        require(passwordInput.isNotBlank()) { "비밀번호 Input Element를 입력하세요." }
+                        require(loginButtonElement.isNotBlank()) { "로그인 Button Element를 입력하세요." }
+                        require(email.isNotBlank()) { "연락 받을 이메일을 입력하세요." }
+                        require(email.matches(EMAIL_REGEX)) { "이메일 형식이 올바르지 않습니다." }
 
-                    transaction {
-                        Websites.insert {
-                            it[Websites.name] = name.trim()
-                            it[Websites.url] = url.trim()
-                            it[Websites.loginUrl] = loginUrl.trim()
-                            it[Websites.email] = email.trim()
-                            it[Websites.idValue] = idValue.trim()
-                            it[Websites.password] = password.trim()
-                            it[Websites.idInput] = idInput.trim()
-                            it[Websites.passwordInput] = passwordInput.trim()
-                            it[Websites.loginButtonElement] = loginButtonElement.trim()
+                        transaction {
+                            Websites.insert {
+                                it[Websites.name] = name.trim()
+                                it[Websites.url] = url.trim()
+                                it[Websites.loginUrl] = loginUrl.trim()
+                                it[Websites.email] = email.trim()
+                                it[Websites.idValue] = idValue.trim()
+                                it[Websites.password] = password.trim()
+                                it[Websites.idInput] = idInput.trim()
+                                it[Websites.passwordInput] = passwordInput.trim()
+                                it[Websites.loginButtonElement] = loginButtonElement.trim()
+                            }
                         }
+                        errorMessage.value = null
+                        onSubmit()
+                    } catch (e: IllegalArgumentException) {
+                        errorMessage.value = e.message
                     }
-                    onSubmit()
                 }) {
                     Text("등록")
                 }
+
+                if (errorMessage.value != null) Text(errorMessage.value!!, color = Color.Red)
 
                 Spacer(Modifier.width(16.dp))
 
